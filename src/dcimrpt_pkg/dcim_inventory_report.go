@@ -42,15 +42,8 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 				Sreport_temp.Deviceid = Dreport.Device[v].Deviceid
 				Sreport_temp.Label = Dreport.Device[v].Label
 				Sreport_temp.Serialno = Dreport.Device[v].Serialno
-				for z := 0; z < len(Preport.People); z++ {
-					//Convert the Owner and Primary contact ID in Names
-					if Preport.People[z].Personid == Dreport.Device[v].Owner {
-						Sreport_temp.Owner = Preport.People[z].Firstname + " " + Preport.People[z].Lastname
-					}
-					if Preport.People[z].Personid == Dreport.Device[v].Primarycontact {
-						Sreport_temp.Primarycontact = Preport.People[z].Firstname + " " + Preport.People[z].Lastname
-					}
-				}
+				Sreport_temp.Owner = Preport.find_name_from_id(Dreport.Device[v].Owner)
+				Sreport_temp.Primarycontact = Preport.find_name_from_id(Dreport.Device[v].Primarycontact)
 				Sreport_temp.Cabinet = Dreport.Device[v].Cabinet
 				Sreport_temp.Position = Dreport.Device[v].Position
 				Sreport_temp.Height = Dreport.Device[v].Height
@@ -85,7 +78,9 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 				Sreport_temp.Deviceid = Dreport.Device[v].Deviceid
 				Sreport_temp.Label = Dreport.Device[v].Label
 				Sreport_temp.Serialno = Dreport.Device[v].Serialno
-				for z := 0; z < len(Preport.People); z++ {
+				Sreport_temp.Owner = Preport.find_name_from_id(Dreport.Device[v].Owner)
+				Sreport_temp.Primarycontact = Preport.find_name_from_id(Dreport.Device[v].Primarycontact)
+				/*for z := 0; z < len(Preport.People); z++ {
 					//Convert the Owner and Primary contact ID in Names
 					if Preport.People[z].Personid == Dreport.Device[v].Owner {
 						Sreport_temp.Owner = Preport.People[z].Firstname + " " + Preport.People[z].Lastname
@@ -93,7 +88,7 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 					if Preport.People[z].Personid == Dreport.Device[v].Primarycontact {
 						Sreport_temp.Primarycontact = Preport.People[z].Firstname + " " + Preport.People[z].Lastname
 					}
-				}
+				}*/
 				Sreport_temp.Cabinet = Dreport.Device[v].Cabinet
 				Sreport_temp.Position = Dreport.Device[v].Position
 				Sreport_temp.Height = Dreport.Device[v].Height

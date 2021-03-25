@@ -14,6 +14,19 @@ type reportP struct {
 	} `json:"people"`
 }
 
+func (RP *reportP) find_name_from_id(id int) string {
+
+	var Name string
+
+	for z := 0; z < len(RP.People); z++ {
+		//Convert the Owner and Primary contact ID in Names
+		if RP.People[z].Personid == id {
+			Name = RP.People[z].Firstname + " " + RP.People[z].Lastname
+		}
+	}
+	return Name
+}
+
 func parse_People(body []byte) reportP {
 
 	//fmt.Println(string(body))
