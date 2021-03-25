@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
+	"time"
 )
 
 type reportS struct {
@@ -27,6 +29,10 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 	var Sreport_temp reportS
 	var ID_to_check int
 	var name_to_check string
+
+	today := time.Now()
+	//fmt.Printf("Time %s", time.Now())
+	layout := "2006-01-02"
 
 	if Inv_ID != "" {
 		i := 0
@@ -54,27 +60,28 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 				Sreport_temp.Status = Dreport.Device[v].Status
 				Sreport_temp.CscsInventarNr = Dreport.Device[v].CscsInventarNr
 				if i == len(Sreport) {
-					//Add the entry to the output Slice
-					Sreport = append(Sreport, Sreport_temp)
+					if Sreport_temp.Status != "Disposed" || D {
+						//Add the entry to the output Slice
+						Sreport = append(Sreport, Sreport_temp)
+						i++
+					}
 				}
-				i++
-
 			}
 		}
 	}
 	if Name != "" {
 		i := 0
 		for z := 0; z < len(Preport.People); z++ {
-			//Convert the Owner and Primary contact ID in Names
 			name_to_check = Preport.People[z].Firstname + " " + Preport.People[z].Lastname
-			fmt.Printf("Name to check %s - LName %s\n", name_to_check, Name)
+			//Checking the string all uppercase
 			if strings.Contains(strings.ToUpper(name_to_check), strings.ToUpper(Name)) {
 				ID_to_check = Preport.People[z].Personid
-				fmt.Printf("ID %d\n", ID_to_check)
+				//fmt.Printf("ID %d\n", ID_to_check)
 			}
 		}
 		for v := 0; v < len(Dreport.Device); v++ {
 			if Dreport.Device[v].Primarycontact == ID_to_check {
+				log.Println("Primary contact Name matched")
 				Sreport_temp.Deviceid = Dreport.Device[v].Deviceid
 				Sreport_temp.Label = Dreport.Device[v].Label
 				Sreport_temp.Serialno = Dreport.Device[v].Serialno
@@ -95,9 +102,10 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 				Sreport_temp.Warrantyexpire = Dreport.Device[v].Warrantyexpire
 				Sreport_temp.Status = Dreport.Device[v].Status
 				Sreport_temp.CscsInventarNr = Dreport.Device[v].CscsInventarNr
+				log.Printf("len Srep %d", len(Sreport))
 				if i == len(Sreport) {
-					//Add the entry to the output Slice
 					if Sreport_temp.Status != "Disposed" || D {
+						//Add the entry to the output Slice
 						Sreport = append(Sreport, Sreport_temp)
 						i++
 					}
@@ -110,9 +118,32 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 	fmt.Println("  ID  Label                                Serial Number              Inventory # Installed   Warranty    Contact                    Department            Location              Position  Status")
 	fmt.Println("----  -----------------------------------  -------------------------  ----------- ----------  ----------  -------------------------  --------------------  --------------------  --------  --------")
 	for i := 0; i < len(Sreport); i++ {
-		fmt.Printf("%4d  %-35s  %-25.25s  %-11.11s %-10s  %-10s  %-25s  %-20s  %-20d   P%2.2dH%2.2d   %s\n",
-			Sreport[i].Deviceid, Sreport[i].Label, Sreport[i].Serialno, Sreport[i].CscsInventarNr, Sreport[i].Installdate,
-			Sreport[i].Warrantyexpire, Sreport[i].Primarycontact, Sreport[i].Owner,
-			Sreport[i].Cabinet, Sreport[i].Position, Sreport[i].Height, Sreport[i].Status)
+		//log.Printf("Date warranty %s %s", today, layout)
+		data, _ := time.Parse(layout, Sreport[i].Warrantyexpire)
+		//log.Printf("Date warranty %s", Sreport[i].Warrantyexpire)
+		if today.Before(data) {
+			log.Print("Printing a line in Warranty")
+			fmt.Printf("%4d  %-35s  %-25.25s  %-11.11s %-10s  %-10s  %-25s  %-20s  %-20d   P%2.2dH%2.2d   %s\n",
+				Sreport[i].Deviceid, Sreport[i].Label, Sreport[i].Serialno, Sreport[i].CscsInventarNr, Sreport[i].Installdate,
+				Sreport[i].Warrantyexpire, Sreport[i].Primarycontact, Sreport[i].Owner,
+				Sreport[i].Cabinet, Sreport[i].Position, Sreport[i].Height, Sreport[i].Status)
+
+		} else if X {
+			log.Print("Printing a line out Warranty")
+			fmt.Printf("%4d  %-35s  %-25.25s  %-11.11s %-10s  %-10s  %-25s  %-20s  %-20d   P%2.2dH%2.2d   %s\n",
+				Sreport[i].Deviceid, Sreport[i].Label, Sreport[i].Serialno, Sreport[i].CscsInventarNr, Sreport[i].Installdate,
+				Sreport[i].Warrantyexpire, Sreport[i].Primarycontact, Sreport[i].Owner,
+				Sreport[i].Cabinet, Sreport[i].Position, Sreport[i].Height, Sreport[i].Status)
+
+		} else {
+			log.Print("printing no line")
+			log.Printf("Date warranty %s", data)
+		}
+		/*
+			fmt.Printf("%4d  %-35s  %-25.25s  %-11.11s %-10s  %-10s  %-25s  %-20s  %-20d   P%2.2dH%2.2d   %s\n",
+				Sreport[i].Deviceid, Sreport[i].Label, Sreport[i].Serialno, Sreport[i].CscsInventarNr, Sreport[i].Installdate,
+				Sreport[i].Warrantyexpire, Sreport[i].Primarycontact, Sreport[i].Owner,
+				Sreport[i].Cabinet, Sreport[i].Position, Sreport[i].Height, Sreport[i].Status)
+		*/
 	}
 }
