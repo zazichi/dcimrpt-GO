@@ -53,6 +53,7 @@ func main() {
 		body := DCIM_req(Server, Report)
 		_ = parse_Dpt(body)
 	case *Iptr:
+
 		Report = "people"
 		body := DCIM_req(Server, Report)
 		reportP := parse_People(body)
