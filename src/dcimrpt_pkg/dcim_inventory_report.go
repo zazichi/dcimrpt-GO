@@ -23,7 +23,7 @@ type reportS struct {
 	CscsInventarNr string
 }
 
-func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport reportD, Inv_ID string, Name string, D bool, X bool) {
+func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport reportD, Inv_ID string, Name string, D bool, X bool, Label string) {
 
 	var Sreport = make([]reportS, 0)
 	var Sreport_temp reportS
@@ -33,6 +33,35 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 	today := time.Now()
 	//fmt.Printf("Time %s", time.Now())
 	layout := "2006-01-02"
+
+	if Label != "" {
+		i := 0
+		for v := 0; v < len(Dreport.Device); v++ {
+			if strings.Contains(strings.ToUpper(Dreport.Device[v].Label), strings.ToUpper(Label)) {
+
+				Sreport_temp.Deviceid = Dreport.Device[v].Deviceid
+				Sreport_temp.Label = Dreport.Device[v].Label
+				Sreport_temp.Serialno = Dreport.Device[v].Serialno
+				Sreport_temp.Owner = Preport.find_name_from_id(Dreport.Device[v].Owner)
+				Sreport_temp.Primarycontact = Preport.find_name_from_id(Dreport.Device[v].Primarycontact)
+				Sreport_temp.Cabinet = Dreport.Device[v].Cabinet
+				Sreport_temp.Position = Dreport.Device[v].Position
+				Sreport_temp.Height = Dreport.Device[v].Height
+				Sreport_temp.Installdate = Dreport.Device[v].Installdate
+				Sreport_temp.Warrantyco = Dreport.Device[v].Warrantyco
+				Sreport_temp.Warrantyexpire = Dreport.Device[v].Warrantyexpire
+				Sreport_temp.Status = Dreport.Device[v].Status
+				Sreport_temp.CscsInventarNr = Dreport.Device[v].CscsInventarNr
+				if i == len(Sreport) {
+					if Sreport_temp.Status != "Disposed" || D {
+						//Add the entry to the output Slice
+						Sreport = append(Sreport, Sreport_temp)
+						i++
+					}
+				}
+			}
+		}
+	}
 
 	if Inv_ID != "" {
 		i := 0

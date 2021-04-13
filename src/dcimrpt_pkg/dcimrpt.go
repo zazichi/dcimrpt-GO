@@ -9,6 +9,8 @@ import (
 
 func main() {
 
+	//var wg sync.WaitGroup
+
 	// Variable definition
 	var Server string
 	var Report string
@@ -20,6 +22,11 @@ func main() {
 	}
 	log.SetOutput(file)
 
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "%s [-C|-D|-P|-I] [option of search in case of -I: LName|Label|SID] [optoinal -X and/or -disposed] [optional -S]:\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+
 	Cptr := flag.Bool("C", false, "cabinet report")
 	Dptr := flag.Bool("D", false, "Department report")
 	Iptr := flag.Bool("I", false, "Inventory report")
@@ -29,6 +36,7 @@ func main() {
 	Sptr := flag.String("S", "dcim.cscs.ch", "server")
 	IDptr := flag.String("SID", "", "Specify the InventoryID you want to search for")
 	LNameptr := flag.String("LName", "", "Specify the Owner LastName you want to search for")
+	Label := flag.String("Label", "", "Specify the Label you want to search for")
 
 	//ProgName := os.Args[0]
 	//fmt.Printf("Progam Name: %s\n", ProgName)
@@ -54,19 +62,32 @@ func main() {
 		_ = parse_Dpt(body)
 	case *Iptr:
 
-		Report = "people"
-		body := DCIM_req(Server, Report)
-		reportP := parse_People(body)
-		Report = "cabinet"
-		body = DCIM_req(Server, Report)
-		reportC := parse_Cabinet(body)
-		Report = "department"
-		body = DCIM_req(Server, Report)
-		reportDpt := parse_Dpt(body)
-		Report = "device"
-		body = DCIM_req(Server, Report)
-		reportD := parse_Device(body)
-		ReportI(reportC, reportP, reportDpt, reportD, *IDptr, *LNameptr, *Disptr, *Xptr)
+		var body1 []byte
+		var body2 []byte
+		var body3 []byte
+		var body4 []byte
+		var reportP reportP
+		var reportC reportC
+		var reportD reportD
+		var reportDpt reportDpt
+
+		Report1 := "people"
+		Report2 := "cabinet"
+		Report3 := "department"
+		Report4 := "device"
+		//wg.Add(4)
+		//go func() { body1 = DCIM_req(Server, Report1) }()
+		body1 = DCIM_req(Server, Report1)
+		body2 = DCIM_req(Server, Report2)
+		body3 = DCIM_req(Server, Report3)
+		body4 = DCIM_req(Server, Report4)
+		//wg.Wait()
+		reportP = parse_People(body1)
+		reportC = parse_Cabinet(body2)
+		reportDpt = parse_Dpt(body3)
+		reportD = parse_Device(body4)
+
+		ReportI(reportC, reportP, reportDpt, reportD, *IDptr, *LNameptr, *Disptr, *Xptr, *Label)
 
 	case *Pptr:
 		Report = "people"
