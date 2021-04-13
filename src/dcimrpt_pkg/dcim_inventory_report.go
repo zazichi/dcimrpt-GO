@@ -66,7 +66,7 @@ func ReportI(Creport reportC, Preport reportP, Dptreport reportDpt, Dreport repo
 	if Inv_ID != "" {
 		i := 0
 		for v := 0; v < len(Dreport.Device); v++ {
-			if Dreport.Device[v].CscsInventarNr == Inv_ID {
+			if strings.Contains(strings.ToUpper(Dreport.Device[v].CscsInventarNr), strings.ToUpper(Inv_ID)) {
 
 				Sreport_temp.Deviceid = Dreport.Device[v].Deviceid
 				Sreport_temp.Label = Dreport.Device[v].Label
