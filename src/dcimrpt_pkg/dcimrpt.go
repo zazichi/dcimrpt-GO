@@ -37,6 +37,7 @@ func main() {
 	IDptr := flag.String("SID", "", "Specify the InventoryID you want to search for")
 	LNameptr := flag.String("LName", "", "Specify the Owner LastName you want to search for")
 	Label := flag.String("Label", "", "Specify the Label you want to search for")
+	Serial := flag.String("Serial", "", "Specify the Serial number you want to search for")
 
 	//ProgName := os.Args[0]
 	//fmt.Printf("Progam Name: %s\n", ProgName)
@@ -87,7 +88,7 @@ func main() {
 		reportDpt = parse_Dpt(body3)
 		reportD = parse_Device(body4)
 
-		ReportI(reportC, reportP, reportDpt, reportD, *IDptr, *LNameptr, *Disptr, *Xptr, *Label)
+		ReportI(reportC, reportP, reportDpt, reportD, *IDptr, *LNameptr, *Disptr, *Xptr, *Label, *Serial)
 
 	case *Pptr:
 		Report = "people"
